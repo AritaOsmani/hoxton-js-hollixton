@@ -76,36 +76,15 @@ function renderHeaderElements() {
     document.body.append(headerEl);
 }
 function renderMainElements() {
-    // <main>
-    //     <h2>Home</h2>
-    //     <div class="cards">
-    //         <a href="#">
-    //             <div class="item-card">
-    //                 <img class="item-img" src="https://img.hollisterco.com/is/image/anf/KIC_324-1085-0123-100_prod1"
-    //                     alt="">
-    //                 <h3 class="item-name">Name</h3>
-    //                 <div class="prices">
-    //                     <span class="item-price">Price</span>
-    //                     <span class="item-discounted-price">Discounted</span>
-    //                 </div>
-
-    //             </div>
-    //         </a>
-    //     </div>
-
-    // </main>
-
-
-
     const titleEl = document.createElement('h2');
     titleEl.textContent = 'Home';
 
     const cardContainer = document.createElement('div');
     cardContainer.setAttribute('class', 'cards');
 
-    for (let i = 0; i < 10; i++) {
+    for (const storeItem of state.store) {
 
-        const linkEl = createCardElements();
+        const linkEl = createCardElements(storeItem);
 
         //Append linkEl to cardContainer:
         cardContainer.append(linkEl);
@@ -117,7 +96,7 @@ function renderMainElements() {
     document.body.append(mainEl);
 
 }
-function createCardElements() {
+function createCardElements(storeItem) {
     const linkEl = document.createElement('a');
     linkEl.setAttribute('href', '#');
 
@@ -126,25 +105,30 @@ function createCardElements() {
 
     const itemImage = document.createElement('img');
     itemImage.setAttribute('class', 'item-img');
-    itemImage.setAttribute('src', 'https://img.hollisterco.com/is/image/anf/KIC_324-1085-0123-100_prod1');
+    itemImage.setAttribute('src', storeItem.image);
 
     const itemName = document.createElement('h3');
     itemName.setAttribute('class', 'item-name');
-    itemName.textContent = 'Name';
+    itemName.textContent = storeItem.name;
 
     const prices = document.createElement('div');
     prices.setAttribute('class', 'prices');
 
     const itemPrice = document.createElement('span');
-    itemPrice.setAttribute('class', 'item-price');
-    itemPrice.textContent = 'Price';
 
-    const itemdiscountedPrice = document.createElement('span');
-    itemdiscountedPrice.setAttribute('class', 'item-discounted-price');
-    itemdiscountedPrice.textContent = 'Discounted';
+    itemPrice.textContent = `£ ${storeItem.price}`;
 
-    //Append itemPrice and itemDiscountedPrice to prices:
-    prices.append(itemPrice, itemdiscountedPrice);
+    if (storeItem.hasOwnProperty('discountedPrice')) {
+        const itemdiscountedPrice = document.createElement('span');
+        itemdiscountedPrice.setAttribute('class', 'item-discounted-price');
+        itemdiscountedPrice.textContent = `£ ${storeItem.discountedPrice}`;
+        itemPrice.setAttribute('class', 'item-price discount-price');
+        //Append itemPrice and itemDiscountedPrice to prices:
+        prices.append(itemPrice, itemdiscountedPrice);
+    } else {
+        itemPrice.setAttribute('class', 'item-price');
+        prices.append(itemPrice);
+    }
 
     //Append image, name and prices to itemCard:
     itemCard.append(itemImage, itemName, prices);
@@ -163,6 +147,10 @@ function renderFooterElements() {
     document.body.append(footerEl);
 }
 
+function getStoreItemsFromServer() {
+    return fetch('http://localhost:3000/store').then(res => res.json())
+}
+
 function render() {
     document.body.innerHTML = '';
     renderHeaderElements();
@@ -170,4 +158,11 @@ function render() {
     renderFooterElements();
 
 }
-render();
+function init() {
+    getStoreItemsFromServer().then(store => {
+        state.store = store;
+        render();
+    });
+
+}
+init();

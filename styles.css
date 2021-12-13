@@ -75,14 +75,33 @@ main h2{
 }
 .item-card{
     display: grid;
+    grid-template-rows: auto 50px auto;
     gap:5px;
     padding:10px;
+   
 }
-.item-price{
+.item-name{
+    
+    font-size:17px;
+}
+.discount-price{
     text-decoration: line-through;
+    
 }
 .item-discounted-price{
     color:red;
+    font-size: 18px;
+    font-weight: bold;
+}
+.item-price{
+    font-size: 18px;
+    font-weight: bold;
+}
+.prices{
+    display: grid;
+    grid-template-columns: repeat(2,70px);
+    place-items: start;
+    padding:5px;
 }
 footer{
     display: grid;
