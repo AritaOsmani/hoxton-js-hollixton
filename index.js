@@ -129,10 +129,13 @@ function createCardElements(storeItem) {
         itemPrice.setAttribute('class', 'item-price');
         prices.append(itemPrice);
     }
-
-    //Append image, name and prices to itemCard:
-    itemCard.append(itemImage, itemName, prices);
-
+    const newTag = document.createElement('span');
+    newTag.setAttribute('class', 'new-tag');
+    newTag.textContent = 'New';
+    if (getNumberOfDays(storeItem.dateEntered) > 10) {
+        newTag.style.visibility = 'hidden';
+    }
+    itemCard.append(newTag, itemImage, itemName, prices);
     //Append itemCard to linkEl:
     linkEl.append(itemCard);
     return linkEl;
@@ -151,6 +154,16 @@ function getStoreItemsFromServer() {
     return fetch('http://localhost:3000/store').then(res => res.json())
 }
 
+function getNumberOfDays(dateEneterd) {
+    let todaysDate = new Date();
+    let arr = dateEneterd.split('/');
+    let date = new Date(arr[0], arr[1] - 1, arr[2]);
+
+    let diff = todaysDate - date;
+
+    let numOfDays = (diff / (60 * 60 * 24 * 1000));
+    return Math.floor(numOfDays);
+}
 function render() {
     document.body.innerHTML = '';
     renderHeaderElements();
