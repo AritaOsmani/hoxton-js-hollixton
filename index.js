@@ -3,12 +3,13 @@ const mainEl = document.createElement('main');
 const footerEl = document.createElement('footer');
 
 const state = {
-    store: []
+    store: [],
+    page: 'Home',
 }
 
 
 function renderHeaderElements() {
-
+    headerEl.innerHTML = ''
     const headerItemsContainer = document.createElement('ul');
     headerItemsContainer.setAttribute('class', 'header-items');
 
@@ -23,6 +24,11 @@ function renderHeaderElements() {
     const girlsListItem = document.createElement('li');
     girlsListItem.setAttribute('class', 'girls');
     girlsListItem.textContent = 'Girls';
+
+    girlsListItem.addEventListener('click', function () {
+        state.page = 'Girls';
+        render();
+    })
 
     const guysListItem = document.createElement('li');
     guysListItem.setAttribute('class', 'guys');
@@ -76,19 +82,32 @@ function renderHeaderElements() {
     document.body.append(headerEl);
 }
 function renderMainElements() {
+    mainEl.innerHTML = ''
     const titleEl = document.createElement('h2');
     titleEl.textContent = 'Home';
 
     const cardContainer = document.createElement('div');
     cardContainer.setAttribute('class', 'cards');
 
-    for (const storeItem of state.store) {
+    if (state.page === 'Girls') {
+        const girlsType = getStoreItemsByType(state.page);
+        for (const storeItem of girlsType) {
+            const linkEl = createCardElements(storeItem);
 
-        const linkEl = createCardElements(storeItem);
+            //Append linkEl to cardContainer:
+            cardContainer.append(linkEl);
+        }
+    } else {
+        for (const storeItem of state.store) {
 
-        //Append linkEl to cardContainer:
-        cardContainer.append(linkEl);
+            const linkEl = createCardElements(storeItem);
+
+            //Append linkEl to cardContainer:
+            cardContainer.append(linkEl);
+        }
     }
+
+
     //Append titlEl and cardContainer to mainEl:
     mainEl.append(titleEl, cardContainer);
 
@@ -119,28 +138,37 @@ function createCardElements(storeItem) {
     itemPrice.textContent = `£ ${storeItem.price}`;
 
     if (storeItem.hasOwnProperty('discountedPrice')) {
+
         const itemdiscountedPrice = document.createElement('span');
         itemdiscountedPrice.setAttribute('class', 'item-discounted-price');
         itemdiscountedPrice.textContent = `£ ${storeItem.discountedPrice}`;
         itemPrice.setAttribute('class', 'item-price discount-price');
         //Append itemPrice and itemDiscountedPrice to prices:
         prices.append(itemPrice, itemdiscountedPrice);
-    } else {
+    }
+    else {
+
         itemPrice.setAttribute('class', 'item-price');
         prices.append(itemPrice);
     }
+
     const newTag = document.createElement('span');
     newTag.setAttribute('class', 'new-tag');
     newTag.textContent = 'New';
+
     if (getNumberOfDays(storeItem.dateEntered) > 10) {
+
         newTag.style.visibility = 'hidden';
     }
+
     itemCard.append(newTag, itemImage, itemName, prices);
+
     //Append itemCard to linkEl:
     linkEl.append(itemCard);
     return linkEl;
 }
 function renderFooterElements() {
+    footerEl.innerHTML = ''
     const titleEl = document.createElement('h3');
     titleEl.textContent = 'Hollixton';
     const parEl = document.createElement('p');
@@ -153,7 +181,10 @@ function renderFooterElements() {
 function getStoreItemsFromServer() {
     return fetch('http://localhost:3000/store').then(res => res.json())
 }
-
+function getStoreItemsByType(storeType) {
+    let newArr = state.store.filter(item => item.type === storeType);
+    return newArr;
+}
 function getNumberOfDays(dateEneterd) {
     let todaysDate = new Date();
     let arr = dateEneterd.split('/');
