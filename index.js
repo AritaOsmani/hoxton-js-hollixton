@@ -18,6 +18,11 @@ function renderHeaderElements() {
     headerTitle.setAttribute('class', 'header-title');
     headerTitle.textContent = 'Hollixton';
 
+    headerTitle.addEventListener('click', function () {
+        state.page = 'Home';
+        render();
+    })
+
     //Add headerTitle to titleListItem:
     titleListItem.append(headerTitle);
 
@@ -34,10 +39,19 @@ function renderHeaderElements() {
     guysListItem.setAttribute('class', 'guys');
     guysListItem.textContent = 'Guys';
 
+    guysListItem.addEventListener('click', function () {
+        state.page = 'Guys';
+        render();
+    })
+
     const saleListItem = document.createElement('li');
     saleListItem.setAttribute('class', 'sale');
     saleListItem.textContent = 'Sale';
 
+    saleListItem.addEventListener('click', function () {
+        state.page = 'Sale';
+        render();
+    })
 
     const searchIcon = document.createElement('i');
     searchIcon.setAttribute('class', 'fal fa-search');
@@ -90,6 +104,7 @@ function renderMainElements() {
     cardContainer.setAttribute('class', 'cards');
 
     if (state.page === 'Girls') {
+        titleEl.textContent = 'Girls';
         const girlsType = getStoreItemsByType(state.page);
         for (const storeItem of girlsType) {
             const linkEl = createCardElements(storeItem);
@@ -97,7 +112,27 @@ function renderMainElements() {
             //Append linkEl to cardContainer:
             cardContainer.append(linkEl);
         }
-    } else {
+    } else if (state.page === 'Guys') {
+        titleEl.textContent = 'Guys';
+        const guysType = getStoreItemsByType(state.page);
+        for (const storeItem of guysType) {
+            const linkEl = createCardElements(storeItem);
+
+            //Append linkEl to cardContainer:
+            cardContainer.append(linkEl);
+        }
+    } else if (state.page === 'Sale') {
+        titleEl.textContent = 'Sales';
+        let sales = getStoreItemsByDiscountProperty();
+        for (const storeItem of sales) {
+
+            const linkEl = createCardElements(storeItem);
+
+            //Append linkEl to cardContainer:
+            cardContainer.append(linkEl);
+        }
+    }
+    else {
         for (const storeItem of state.store) {
 
             const linkEl = createCardElements(storeItem);
@@ -183,6 +218,10 @@ function getStoreItemsFromServer() {
 }
 function getStoreItemsByType(storeType) {
     let newArr = state.store.filter(item => item.type === storeType);
+    return newArr;
+}
+function getStoreItemsByDiscountProperty() {
+    let newArr = state.store.filter(item => item.hasOwnProperty('discountedPrice'));
     return newArr;
 }
 function getNumberOfDays(dateEneterd) {
