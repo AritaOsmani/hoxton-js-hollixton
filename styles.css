@@ -5,12 +5,18 @@
 }
 body{
     font-family: sans-serif;
+    display: grid;
+    grid-template-rows: 70px,1fr,auto;
+    height:100vh;
+}
+a{
+    text-decoration: none;
+    color:inherit;
 }
 img{
     width:100%;
 }
 header{
-    border:solid 1px black;
     padding:10px;
    color:#2c3c60;
 }
@@ -49,4 +55,43 @@ li{
 }
 .girls,.guys,.sale{
     cursor: pointer;
+}
+main{
+    display: grid;
+    gap:5px;
+    padding:30px;
+  
+}
+main h2{
+    margin-left:40px;
+    color:#2c3c60
+}
+.cards{
+    display: grid;
+    grid-template-columns: repeat(auto-fit,250px);
+    place-items: center;
+    gap:25px;
+    padding:30px;
+}
+.item-card{
+    display: grid;
+    gap:5px;
+    padding:10px;
+}
+.item-price{
+    text-decoration: line-through;
+}
+.item-discounted-price{
+    color:red;
+}
+footer{
+    display: grid;
+    grid-template-columns: 1fr auto;
+    place-items: start;
+    align-content: center;
+    background-color: #eeeeee;
+    padding:30px 60px;
+    color:#2c3c60;
+    height:100px;
+    
 }
