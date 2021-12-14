@@ -5,8 +5,11 @@ const footerEl = document.createElement('footer');
 const state = {
     store: [],
     page: 'Home',
-}
+    modal: ''
+    // user: '',
+    // bag: [],
 
+}
 
 function renderHeaderElements() {
     headerEl.innerHTML = ''
@@ -70,6 +73,10 @@ function renderHeaderElements() {
     userButton.setAttribute('class', 'user-button');
     //Append userIcon to userButton:
     userButton.append(userIcon);
+    userButton.addEventListener('click', function () {
+        state.modal = 'signIn';
+        render();
+    })
 
     const userListItem = document.createElement('li');
     userListItem.setAttribute('class', 'btn-list');
@@ -254,6 +261,62 @@ function renderFooterElements() {
     document.body.append(footerEl);
 }
 
+function renderSignInModal() {
+    const modalWrapper = document.createElement('div');
+    modalWrapper.setAttribute('class', 'modal-wrapper');
+
+    const modal = document.createElement('div');
+    modal.setAttribute('class', 'sign-in-modal');
+
+    const closeBtn = document.createElement('button');
+    closeBtn.setAttribute('class', 'close-btn');
+    closeBtn.textContent = 'X';
+
+    closeBtn.addEventListener('click', function () {
+        state.modal = '';
+        render();
+    })
+
+    const titleEl = document.createElement('h3');
+    titleEl.textContent = 'Sign In';
+
+    const formEl = document.createElement('form');
+    formEl.setAttribute('class', 'sign-in-form');
+
+    const emailLabel = document.createElement('label');
+    emailLabel.textContent = 'Email';
+
+    const emailInput = document.createElement('input');
+    emailInput.setAttribute('type', 'email');
+
+    emailLabel.append(emailInput);
+
+    const passwordLabel = document.createElement('label');
+    passwordLabel.textContent = 'Password';
+
+    const passwordInput = document.createElement('input');
+    passwordInput.setAttribute('type', 'password');
+
+    passwordLabel.append(passwordInput);
+
+    const submitBtn = document.createElement('button');
+    submitBtn.setAttribute('class', 'sign-in-btn');
+    submitBtn.textContent = 'SIGN IN';
+
+    formEl.append(emailLabel, passwordLabel, submitBtn);
+
+    modal.append(closeBtn, titleEl, formEl);
+    modalWrapper.append(modal);
+    document.body.append(modalWrapper);
+}
+function renderModals() {
+    if (state.modal === '') {
+        return;
+    }
+    if (state.modal === 'signIn') {
+        renderSignInModal();
+    }
+}
 function getStoreItemsFromServer() {
     return fetch('http://localhost:3000/store').then(res => res.json())
 }
@@ -265,6 +328,9 @@ function getStoreItemsByDiscountProperty() {
     let newArr = state.store.filter(item => item.hasOwnProperty('discountedPrice'));
     return newArr;
 }
+function getUserFromServer(userName) {
+    return fetch(`http://localhost:3000/users/${userName}@email.com`).then(res => res.json());
+}
 function getNumberOfDays(dateEneterd) {
     let todaysDate = new Date();
     let arr = dateEneterd.split('/');
@@ -275,11 +341,20 @@ function getNumberOfDays(dateEneterd) {
     let numOfDays = (diff / (60 * 60 * 24 * 1000));
     return Math.floor(numOfDays);
 }
+// function addItemToBag() {
+
+
+// }
+// function increaseQuantity(storeItem) {
+//     storeItem.quantity++;
+
+// }
 function render() {
     document.body.innerHTML = '';
     renderHeaderElements();
     renderMainElements();
     renderFooterElements();
+    renderModals();
 
 }
 function init() {
