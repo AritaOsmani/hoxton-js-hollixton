@@ -74,7 +74,11 @@ function renderHeaderElements() {
     //Append userIcon to userButton:
     userButton.append(userIcon);
     userButton.addEventListener('click', function () {
-        state.modal = 'signIn';
+        if (state.user !== '') {
+            state.modal = 'signOut';
+        } else {
+            state.modal = 'signIn';
+        }
         render();
     })
 
@@ -323,12 +327,55 @@ function renderSignInModal() {
     modalWrapper.append(modal);
     document.body.append(modalWrapper);
 }
+function renderSignOutModal() {
+
+    const modalWrapper = document.createElement('div');
+    modalWrapper.setAttribute('class', 'modal-wrapper');
+
+    const modal = document.createElement('div');
+    modal.setAttribute('class', 'sign-out-modal');
+
+    const closeBtn = document.createElement('button');
+    closeBtn.setAttribute('class', 'close-btn');
+    closeBtn.textContent = 'X';
+
+    closeBtn.addEventListener('click', function () {
+        state.modal = '';
+        render();
+    })
+
+    const titleEl = document.createElement('h2');
+    titleEl.textContent = 'Profile';
+
+    const username = state.user.split('@')
+    const name = username[0].charAt(0).toUpperCase() + username[0].slice(1);
+    const parEl = document.createElement('p');
+    parEl.textContent = `Hey, ${name}`;
+
+    const signOutBtn = document.createElement('button');
+    signOutBtn.setAttribute('class', 'sign-out-btn');
+    signOutBtn.textContent = 'SIGN OUT';
+
+    signOutBtn.addEventListener('click', function () {
+        state.user = '';
+        state.bag = [];
+        state.modal = '';
+        render();
+    })
+
+    modal.append(closeBtn, titleEl, parEl, signOutBtn);
+    modalWrapper.append(modal);
+    document.body.append(modalWrapper);
+}
 function renderModals() {
     if (state.modal === '') {
         return;
     }
     if (state.modal === 'signIn') {
         renderSignInModal();
+    }
+    if (state.modal === 'signOut') {
+        renderSignOutModal();
     }
 }
 function getStoreItemsFromServer() {

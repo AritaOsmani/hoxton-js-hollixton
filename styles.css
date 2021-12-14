@@ -206,7 +206,7 @@ label{
     display: grid;
     gap:20px;
 }
-.sign-in-btn{
+.sign-in-btn,.sign-out-btn{
     padding:15px 60px;
     border-radius: 30px;
     background-color: #0d669a;
@@ -226,4 +226,15 @@ label{
     border: none;
     background-color: unset;
     cursor: pointer;
+}
+.sign-out-modal{
+    display: grid;
+    gap:10px;
+    border:solid 1px black;
+    padding:30px 50px;
+    width:300px;
+    background-color: white;
+    border: solid 1px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    position: relative;
 }
