@@ -153,6 +153,9 @@ function renderMainElements() {
 function createCardElements(storeItem) {
     const linkEl = document.createElement('a');
     linkEl.setAttribute('href', '#');
+    linkEl.addEventListener('click', function () {
+        renderDetailsPageElements(storeItem);
+    })
 
     const itemCard = document.createElement('div');
     itemCard.setAttribute('class', 'item-card');
@@ -201,6 +204,44 @@ function createCardElements(storeItem) {
     //Append itemCard to linkEl:
     linkEl.append(itemCard);
     return linkEl;
+}
+function renderDetailsPageElements(storeItem) {
+
+    const container = document.createElement('div');
+    container.setAttribute('class', 'container');
+
+    const imageEl = document.createElement('img');
+    imageEl.setAttribute('src', storeItem.image);
+
+    const infoContainer = document.createElement('div');
+    infoContainer.setAttribute('class', 'info-container');
+
+    const nameEl = document.createElement('h3');
+    nameEl.textContent = storeItem.name;
+    const priceEl = document.createElement('h4');
+    priceEl.setAttribute('class', 'details-page-price')
+
+    if (storeItem.discountedPrice) {
+        priceEl.textContent = `£ ${storeItem.discountedPrice}`;
+    } else {
+        priceEl.textContent = `£ ${storeItem.price}`;
+    }
+
+
+    const addButton = document.createElement('button');
+    addButton.setAttribute('class', 'add-to-cart-btn');
+    addButton.textContent = 'Add to cart';
+
+    addButton.addEventListener('click', function () {
+
+        render();
+    })
+
+    infoContainer.append(nameEl, priceEl, addButton);
+    container.append(imageEl, infoContainer);
+    mainEl.innerHTML = ''
+    mainEl.append(container);
+
 }
 function renderFooterElements() {
     footerEl.innerHTML = ''
