@@ -5,9 +5,9 @@ const footerEl = document.createElement('footer');
 const state = {
     store: [],
     page: 'Home',
-    modal: ''
-    // user: '',
-    // bag: [],
+    modal: '',
+    user: '',
+    bag: [],
 
 }
 
@@ -240,7 +240,7 @@ function renderDetailsPageElements(storeItem) {
     addButton.textContent = 'Add to cart';
 
     addButton.addEventListener('click', function () {
-
+        addItemToBag(storeItem);
         render();
     })
 
@@ -305,6 +305,20 @@ function renderSignInModal() {
 
     formEl.append(emailLabel, passwordLabel, submitBtn);
 
+    formEl.addEventListener('submit', event => {
+        event.preventDefault();
+        const userName = emailInput.value;
+        const password = passwordInput.value;
+        getUserFromServer(userName).then(user => {
+            if (user.password === password) {
+                state.bag = user.bag;
+                state.user = userName;
+            }
+        });
+        state.modal = '';
+        render();
+    })
+
     modal.append(closeBtn, titleEl, formEl);
     modalWrapper.append(modal);
     document.body.append(modalWrapper);
@@ -329,7 +343,7 @@ function getStoreItemsByDiscountProperty() {
     return newArr;
 }
 function getUserFromServer(userName) {
-    return fetch(`http://localhost:3000/users/${userName}@email.com`).then(res => res.json());
+    return fetch(`http://localhost:3000/users/${userName}`).then(res => res.json());
 }
 function getNumberOfDays(dateEneterd) {
     let todaysDate = new Date();
@@ -341,14 +355,50 @@ function getNumberOfDays(dateEneterd) {
     let numOfDays = (diff / (60 * 60 * 24 * 1000));
     return Math.floor(numOfDays);
 }
-// function addItemToBag() {
+function addItemToBag(storeItem) {
+    if (storeItem.stock === 0) {
+        return
+    }
 
+    const item = {
+        id: storeItem.id,
+        quantity: 1
+    }
+    const index = state.bag.findIndex(i => i.id === storeItem.id);
+    if (index === -1) {
+        state.bag.push(item);
+    } else {
+        increaseQuantity(state.bag[index]);
+    }
+    updateBagInServer(state.bag);
+    decreaseQuantity(storeItem);
+    updateStoreItemInServer(storeItem);
 
-// }
-// function increaseQuantity(storeItem) {
-//     storeItem.quantity++;
-
-// }
+}
+function increaseQuantity(storeItem) {
+    storeItem.quantity++;
+}
+function decreaseQuantity(storeItem) {
+    storeItem.stock--;
+}
+function updateBagInServer(newBag) {
+    fetch(`http://localhost:3000/users/${state.user}`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ bag: newBag })
+    })
+}
+function updateStoreItemInServer(storeItem) {
+    fetch(`http://localhost:3000/store/${storeItem.id}`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(storeItem)
+    })
+}
 function render() {
     document.body.innerHTML = '';
     renderHeaderElements();

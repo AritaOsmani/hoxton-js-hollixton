@@ -8,7 +8,7 @@
             "price": 40,
             "discountedPrice": 21.99,
             "dateEntered": "2021/12/10",
-            "stock": 10
+            "stock": 13
         },
         {
             "id": 2,
@@ -17,7 +17,7 @@
             "image": "https://img.hollisterco.com/is/image/anf/KIC_359-1220-1911-805_prod1",
             "price": 29,
             "dateEntered": "2021/12/5",
-            "stock": 5
+            "stock": 4
         },
         {
             "id": 3,
@@ -129,6 +129,10 @@
                 },
                 {
                     "id": 3,
+                    "quantity": 1
+                },
+                {
+                    "id": 2,
                     "quantity": 1
                 }
             ]
