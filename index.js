@@ -6,6 +6,7 @@ const state = {
     store: [],
     page: 'Home',
     modal: '',
+    // user: 'nicolas@email.com',
     user: '',
     bag: [],
 
@@ -92,6 +93,11 @@ function renderHeaderElements() {
     bagButton.setAttribute('class', 'bag-button');
     //Append bagIcon to bagButton:
     bagButton.append(bagIcon);
+
+    bagButton.addEventListener('click', function () {
+        state.modal = 'cart';
+        render();
+    })
 
     const bagListItem = document.createElement('li');
     bagListItem.setAttribute('class', 'btn-list');
@@ -367,6 +373,104 @@ function renderSignOutModal() {
     modalWrapper.append(modal);
     document.body.append(modalWrapper);
 }
+function renderCartModal() {
+    const modalWrapper = document.createElement('div');
+    modalWrapper.setAttribute('class', 'modal-wrapper');
+
+    const modal = document.createElement('div');
+    modal.setAttribute('class', 'cart-modal');
+
+    const closeBtn = document.createElement('button');
+    closeBtn.setAttribute('class', 'close-btn');
+    closeBtn.textContent = 'X';
+
+    closeBtn.addEventListener('click', function () {
+        state.modal = '';
+        render();
+    })
+
+    const titleEl = document.createElement('h3');
+    titleEl.textContent = 'Bag';
+
+    const itemListContainer = document.createElement('ul');
+    itemListContainer.setAttribute('class', 'item-list-container');
+
+
+
+    for (const item of state.bag) {
+        const newArr = state.store.filter(newItem => newItem.id === item.id);
+        console.log(newArr[0]);
+        const listItem = createCartListElements(item, newArr[0]);
+        itemListContainer.append(listItem);
+
+    }
+    const total = getTotal();
+    const payBtn = document.createElement('button');
+    payBtn.setAttribute('class', 'pay-btn');
+    payBtn.textContent = `Pay now:  £ ${total.toFixed(2)}`;
+    modal.append(closeBtn, titleEl, itemListContainer, payBtn);
+    modalWrapper.append(modal);
+    document.body.append(modalWrapper);
+
+}
+function createCartListElements(item, newArr) {
+
+    const listItem = document.createElement('li');
+    listItem.setAttribute('class', 'list-item');
+
+    const imgEl = document.createElement('img');
+    imgEl.setAttribute('src', newArr.image);
+
+    const itemInfoContainer = document.createElement('div');
+    itemInfoContainer.setAttribute('class', 'item-info');
+
+    const itemName = document.createElement('h4');
+    itemName.setAttribute('class', 'item-name');
+    itemName.textContent = newArr.name;
+
+    const priceContainer = document.createElement('div');
+    priceContainer.setAttribute('class', 'price-container');
+
+    const initPrice = document.createElement('span');
+    initPrice.setAttribute('class', 'initial-price');
+    initPrice.textContent = `£ ${newArr.price} `;
+
+    const itemQuantity = document.createElement('span');
+    itemQuantity.setAttribute('class', 'quantity_in_bag');
+    itemQuantity.textContent = `(${item.quantity}x)`;
+
+    if (newArr.discountedPrice) {
+        initPrice.setAttribute('class', 'initial-price_discounted')
+        const actPrice = document.createElement('span');
+        actPrice.setAttribute('class', 'actual-price');
+        actPrice.textContent = `£ ${newArr.discountedPrice}`;
+        priceContainer.append(initPrice, actPrice, itemQuantity);
+    } else {
+        priceContainer.append(initPrice, itemQuantity);
+    }
+
+
+
+    const removeBtn = document.createElement('button');
+    removeBtn.setAttribute('class', 'remove-btn');
+    removeBtn.textContent = 'REMOVE';
+
+    removeBtn.addEventListener('click', function () {
+
+        decreaseQuantity(item);
+        const product = state.store.find(storeItem => storeItem.id === item.id);
+        decreaseStock(product);
+        if (item.quantity === 0) {
+            removeItemFromBag(item);
+
+        }
+        render();
+    })
+
+    itemInfoContainer.append(itemName, priceContainer, removeBtn);
+    listItem.append(imgEl, itemInfoContainer);
+    return listItem;
+}
 function renderModals() {
     if (state.modal === '') {
         return;
@@ -376,6 +480,9 @@ function renderModals() {
     }
     if (state.modal === 'signOut') {
         renderSignOutModal();
+    }
+    if (state.modal === 'cart') {
+        renderCartModal();
     }
 }
 function getStoreItemsFromServer() {
@@ -418,15 +525,34 @@ function addItemToBag(storeItem) {
         increaseQuantity(state.bag[index]);
     }
     updateBagInServer(state.bag);
-    decreaseQuantity(storeItem);
+    decreaseStock(storeItem);
     updateStoreItemInServer(storeItem);
 
+}
+function removeItemFromBag(bagItem) {
+    state.bag = state.bag.filter(item => item.id !== bagItem.id);
 }
 function increaseQuantity(storeItem) {
     storeItem.quantity++;
 }
-function decreaseQuantity(storeItem) {
+function decreaseStock(storeItem) {
     storeItem.stock--;
+}
+function getTotal() {
+    let total = 0;
+    for (const bagItem of state.bag) {
+        const product = state.store.find(item => item.id === bagItem.id);
+        if (product.discountedPrice) {
+            total += bagItem.quantity * product.discountedPrice
+        } else {
+            total += bagItem.quantity * product.price;
+        }
+
+    }
+    return total;
+}
+function decreaseQuantity(storeItem) {
+    storeItem.quantity--;
 }
 function updateBagInServer(newBag) {
     fetch(`http://localhost:3000/users/${state.user}`, {
@@ -453,12 +579,15 @@ function render() {
     renderFooterElements();
     renderModals();
 
+
 }
 function init() {
     getStoreItemsFromServer().then(store => {
         state.store = store;
         render();
     });
-
+    if (state.user !== '') {
+        getUserFromServer(state.user).then(user => state.bag = user.bag);
+    }
 }
 init();
