@@ -459,12 +459,14 @@ function createCartListElements(item, newArr) {
 
         decreaseQuantity(item);
         const product = state.store.find(storeItem => storeItem.id === item.id);
-        decreaseStock(product);
+        increaseStock(product);
         if (item.quantity === 0) {
             removeItemFromBag(item);
 
         }
         render();
+        updateBagInServer(state.bag);
+        updateStoreItemInServer(product)
     })
 
     itemInfoContainer.append(itemName, priceContainer, removeBtn);
@@ -537,6 +539,9 @@ function increaseQuantity(storeItem) {
 }
 function decreaseStock(storeItem) {
     storeItem.stock--;
+}
+function increaseStock(storeItem) {
+    storeItem.stock++;
 }
 function getTotal() {
     let total = 0;
