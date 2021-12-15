@@ -95,13 +95,22 @@ function renderHeaderElements() {
     bagIcon.setAttribute('class', 'far fa-shopping-bag');
     const bagButton = document.createElement('button');
     bagButton.setAttribute('class', 'bag-button');
+
+    const numberOfITemsInBag = countItemsInBag();
+    //Counter Span
+    const counter = document.createElement('span');
+    counter.setAttribute('class', 'counter');
+    counter.textContent = numberOfITemsInBag;
+
     //Append bagIcon to bagButton:
-    bagButton.append(bagIcon);
+    bagButton.append(counter, bagIcon);
 
     bagButton.addEventListener('click', function () {
         state.modal = 'cart';
         render();
     })
+
+
 
     const bagListItem = document.createElement('li');
     bagListItem.setAttribute('class', 'btn-list');
@@ -403,7 +412,6 @@ function renderCartModal() {
 
     for (const item of state.bag) {
         const newArr = state.store.filter(newItem => newItem.id === item.id);
-        console.log(newArr[0]);
         const listItem = createCartListElements(item, newArr[0]);
         itemListContainer.append(listItem);
 
@@ -594,6 +602,13 @@ function getTotal() {
 
     }
     return total;
+}
+function countItemsInBag() {
+    let totalNumberOfItems = 0;
+    for (const bagItem of state.bag) {
+        totalNumberOfItems += bagItem.quantity;
+    }
+    return totalNumberOfItems;
 }
 function decreaseQuantity(storeItem) {
     storeItem.quantity--;

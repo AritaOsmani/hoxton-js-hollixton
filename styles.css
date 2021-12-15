@@ -340,3 +340,17 @@ label{
     padding:10px;
     height:30px;
 }
+.bag-button{
+    position: relative;
+}
+
+.counter{
+    border-radius: 100%;
+    background-color: red;
+    color:white;
+    padding:2px 5px;
+    position: absolute;
+    top:0;
+    right:10px;
+    font-weight: bold;
+}
