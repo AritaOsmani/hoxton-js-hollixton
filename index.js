@@ -64,6 +64,10 @@ function renderHeaderElements() {
     //Append searchIcon to searchButton:
     searchButton.append(searchIcon);
 
+    searchButton.addEventListener('click', function () {
+        state.modal = 'search';
+        render();
+    })
     const searchListItem = document.createElement('li');
     searchListItem.setAttribute('class', 'btn-list');
     searchListItem.append(searchButton);
@@ -473,6 +477,38 @@ function createCartListElements(item, newArr) {
     listItem.append(imgEl, itemInfoContainer);
     return listItem;
 }
+function renderSearchModal() {
+    const modalWrapper = document.createElement('div');
+    modalWrapper.setAttribute('class', 'modal-wrapper');
+
+    const modal = document.createElement('div');
+    modal.setAttribute('class', 'search-modal');
+
+    const closeBtn = document.createElement('button');
+    closeBtn.setAttribute('class', 'close-btn');
+    closeBtn.textContent = 'X';
+
+    closeBtn.addEventListener('click', function () {
+        state.modal = '';
+        render();
+    })
+
+    const titleEl = document.createElement('h2');
+    titleEl.textContent = 'Search for your favourite items!';
+
+    const formEl = document.createElement('form');
+    formEl.setAttribute('class', 'search-form');
+
+    const searchInput = document.createElement('input');
+    searchInput.setAttribute('type', 'text');
+    searchInput.setAttribute('placeholder', 'Search...');
+
+    formEl.append(searchInput);
+    modal.append(closeBtn, titleEl, formEl);
+    modalWrapper.append(modal);
+    document.body.append(modalWrapper);
+
+}
 function renderModals() {
     if (state.modal === '') {
         return;
@@ -485,6 +521,9 @@ function renderModals() {
     }
     if (state.modal === 'cart') {
         renderCartModal();
+    }
+    if (state.modal === 'search') {
+        renderSearchModal();
     }
 }
 function getStoreItemsFromServer() {
