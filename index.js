@@ -6,9 +6,10 @@ const state = {
     store: [],
     page: 'Home',
     modal: '',
-    // user: 'nicolas@email.com',
-    user: '',
+    user: 'nicolas@email.com',
+    // user: '',
     bag: [],
+    search: ''
 
 }
 
@@ -67,6 +68,7 @@ function renderHeaderElements() {
     searchButton.addEventListener('click', function () {
         state.modal = 'search';
         render();
+
     })
     const searchListItem = document.createElement('li');
     searchListItem.setAttribute('class', 'btn-list');
@@ -133,15 +135,27 @@ function renderMainElements() {
     const cardContainer = document.createElement('div');
     cardContainer.setAttribute('class', 'cards');
 
+    // if (state.search !== '') {
+    //     let filteredArr = getItemsByName();
+    //     for (const storeItem of filteredArr) {
+    //         const linkEl = createCardElements(storeItem);
+
+    //         //Append linkEl to cardContainer:
+    //         cardContainer.append(linkEl);
+    //     }
+    // }
     if (state.page === 'Girls') {
         titleEl.textContent = 'Girls';
         const girlsType = getStoreItemsByType(state.page);
+
         for (const storeItem of girlsType) {
             const linkEl = createCardElements(storeItem);
 
             //Append linkEl to cardContainer:
             cardContainer.append(linkEl);
         }
+
+
     } else if (state.page === 'Guys') {
         titleEl.textContent = 'Guys';
         const guysType = getStoreItemsByType(state.page);
@@ -285,20 +299,13 @@ function renderFooterElements() {
 }
 
 function renderSignInModal() {
-    const modalWrapper = document.createElement('div');
-    modalWrapper.setAttribute('class', 'modal-wrapper');
 
     const modal = document.createElement('div');
     modal.setAttribute('class', 'sign-in-modal');
 
     const closeBtn = document.createElement('button');
-    closeBtn.setAttribute('class', 'close-btn');
-    closeBtn.textContent = 'X';
 
-    closeBtn.addEventListener('click', function () {
-        state.modal = '';
-        render();
-    })
+    modalWrapperElements(closeBtn, modal);
 
     const titleEl = document.createElement('h3');
     titleEl.textContent = 'Sign In';
@@ -336,6 +343,7 @@ function renderSignInModal() {
             if (user.password === password) {
                 state.bag = user.bag;
                 state.user = userName;
+                render();
             }
         });
         state.modal = '';
@@ -348,20 +356,13 @@ function renderSignInModal() {
 }
 function renderSignOutModal() {
 
-    const modalWrapper = document.createElement('div');
-    modalWrapper.setAttribute('class', 'modal-wrapper');
 
     const modal = document.createElement('div');
     modal.setAttribute('class', 'sign-out-modal');
 
     const closeBtn = document.createElement('button');
-    closeBtn.setAttribute('class', 'close-btn');
-    closeBtn.textContent = 'X';
 
-    closeBtn.addEventListener('click', function () {
-        state.modal = '';
-        render();
-    })
+    modalWrapperElements(closeBtn, modal);
 
     const titleEl = document.createElement('h2');
     titleEl.textContent = 'Profile';
@@ -387,21 +388,14 @@ function renderSignOutModal() {
     document.body.append(modalWrapper);
 }
 function renderCartModal() {
-    const modalWrapper = document.createElement('div');
-    modalWrapper.setAttribute('class', 'modal-wrapper');
+
 
     const modal = document.createElement('div');
     modal.setAttribute('class', 'cart-modal');
 
     const closeBtn = document.createElement('button');
-    closeBtn.setAttribute('class', 'close-btn');
-    closeBtn.textContent = 'X';
 
-    closeBtn.addEventListener('click', function () {
-        state.modal = '';
-        render();
-    })
-
+    modalWrapperElements(closeBtn, modal);
     const titleEl = document.createElement('h3');
     titleEl.textContent = 'Bag';
 
@@ -486,13 +480,40 @@ function createCartListElements(item, newArr) {
     return listItem;
 }
 function renderSearchModal() {
-    const modalWrapper = document.createElement('div');
-    modalWrapper.setAttribute('class', 'modal-wrapper');
 
     const modal = document.createElement('div');
     modal.setAttribute('class', 'search-modal');
-
     const closeBtn = document.createElement('button');
+
+    modalWrapperElements(closeBtn, modal);
+
+    const titleEl = document.createElement('h2');
+    titleEl.textContent = 'Search for your favourite items!';
+
+    console.log(closeBtn);
+    const formEl = document.createElement('form');
+    formEl.setAttribute('class', 'search-form');
+
+
+
+    const searchInput = document.createElement('input');
+    searchInput.setAttribute('type', 'text');
+    searchInput.setAttribute('placeholder', 'Search...');
+
+    formEl.addEventListener('submit', event => {
+        event.preventDefault();
+        state.search = searchInput.value;
+        state.modal = ''
+        render();
+    })
+    formEl.append(searchInput);
+    modal.append(closeBtn, titleEl, formEl);
+
+}
+function modalWrapperElements(closeBtn, modal) {
+    const modalWrapper = document.createElement('div');
+    modalWrapper.setAttribute('class', 'modal-wrapper');
+
     closeBtn.setAttribute('class', 'close-btn');
     closeBtn.textContent = 'X';
 
@@ -500,19 +521,6 @@ function renderSearchModal() {
         state.modal = '';
         render();
     })
-
-    const titleEl = document.createElement('h2');
-    titleEl.textContent = 'Search for your favourite items!';
-
-    const formEl = document.createElement('form');
-    formEl.setAttribute('class', 'search-form');
-
-    const searchInput = document.createElement('input');
-    searchInput.setAttribute('type', 'text');
-    searchInput.setAttribute('placeholder', 'Search...');
-
-    formEl.append(searchInput);
-    modal.append(closeBtn, titleEl, formEl);
     modalWrapper.append(modal);
     document.body.append(modalWrapper);
 
@@ -631,6 +639,10 @@ function updateStoreItemInServer(storeItem) {
         body: JSON.stringify(storeItem)
     })
 }
+function getItemsByName(arrayToFilter) {
+    let filteredArr = arrayToFilter.filter(storeItem => storeItem.name.toUpperCase().includes(state.search.toUpperCase()));
+    return filteredArr;
+}
 function render() {
     document.body.innerHTML = '';
     renderHeaderElements();
@@ -646,7 +658,10 @@ function init() {
         render();
     });
     if (state.user !== '') {
-        getUserFromServer(state.user).then(user => state.bag = user.bag);
+        getUserFromServer(state.user).then(user => {
+            state.bag = user.bag
+            render();
+        });
     }
 }
 init();

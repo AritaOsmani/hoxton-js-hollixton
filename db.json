@@ -35,7 +35,7 @@
       "image": "https://img.hollisterco.com/is/image/anf/KIC_346-1614-0521-900_prod1",
       "price": 29,
       "dateEntered": "2021/07/10",
-      "stock": 16
+      "stock": 18
     },
     {
       "id": 5,
@@ -63,7 +63,7 @@
       "price": 29,
       "discountedPrice": 20.3,
       "dateEntered": "2020/02/10",
-      "stock": 13
+      "stock": 12
     },
     {
       "id": 8,
@@ -124,15 +124,15 @@
       "password": "nicolas",
       "bag": [
         {
-          "id": 4,
-          "quantity": 2
-        },
-        {
           "id": 5,
           "quantity": 1
         },
         {
           "id": 3,
+          "quantity": 1
+        },
+        {
+          "id": 7,
           "quantity": 1
         }
       ]
