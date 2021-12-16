@@ -12,6 +12,23 @@ const state = {
     search: ''
 
 }
+function getItemsToDisplay() {
+    let itemsToDisplay = state.store;
+    if (state.page === 'Girls') {
+        itemsToDisplay = getStoreItemsByType(state.page);
+    }
+    if (state.page === 'Guys') {
+        itemsToDisplay = getStoreItemsByType(state.page);
+    }
+    if (state.page === 'Sale') {
+        itemsToDisplay = getStoreItemsByDiscountProperty();
+    }
+    if (state.search !== '') {
+        itemsToDisplay = getItemsByName(itemsToDisplay);
+    }
+
+    return itemsToDisplay;
+}
 
 function renderHeaderElements() {
     headerEl.innerHTML = ''
@@ -144,48 +161,15 @@ function renderMainElements() {
     //         cardContainer.append(linkEl);
     //     }
     // }
-    if (state.page === 'Girls') {
-        titleEl.textContent = 'Girls';
-        const girlsType = getStoreItemsByType(state.page);
 
-        for (const storeItem of girlsType) {
-            const linkEl = createCardElements(storeItem);
+    const itemsToDisplay = getItemsToDisplay();
+    for (const item of itemsToDisplay) {
+        titleEl.textContent = state.page;
+        const linkEl = createCardElements(item);
 
-            //Append linkEl to cardContainer:
-            cardContainer.append(linkEl);
-        }
-
-
-    } else if (state.page === 'Guys') {
-        titleEl.textContent = 'Guys';
-        const guysType = getStoreItemsByType(state.page);
-        for (const storeItem of guysType) {
-            const linkEl = createCardElements(storeItem);
-
-            //Append linkEl to cardContainer:
-            cardContainer.append(linkEl);
-        }
-    } else if (state.page === 'Sale') {
-        titleEl.textContent = 'Sales';
-        let sales = getStoreItemsByDiscountProperty();
-        for (const storeItem of sales) {
-
-            const linkEl = createCardElements(storeItem);
-
-            //Append linkEl to cardContainer:
-            cardContainer.append(linkEl);
-        }
+        //         //Append linkEl to cardContainer:
+        cardContainer.append(linkEl);
     }
-    else {
-        for (const storeItem of state.store) {
-
-            const linkEl = createCardElements(storeItem);
-
-            //Append linkEl to cardContainer:
-            cardContainer.append(linkEl);
-        }
-    }
-
 
     //Append titlEl and cardContainer to mainEl:
     mainEl.append(titleEl, cardContainer);
