@@ -152,16 +152,6 @@ function renderMainElements() {
     const cardContainer = document.createElement('div');
     cardContainer.setAttribute('class', 'cards');
 
-    // if (state.search !== '') {
-    //     let filteredArr = getItemsByName();
-    //     for (const storeItem of filteredArr) {
-    //         const linkEl = createCardElements(storeItem);
-
-    //         //Append linkEl to cardContainer:
-    //         cardContainer.append(linkEl);
-    //     }
-    // }
-
     const itemsToDisplay = getItemsToDisplay();
     for (const item of itemsToDisplay) {
         titleEl.textContent = state.page;
@@ -647,5 +637,6 @@ function init() {
             render();
         });
     }
+    console.log('New Branch');
 }
 init();
